@@ -101,6 +101,7 @@ namespace TradeMarket.Tests.IntegrationTests
             //arrange
             var customer = new CustomerModel
             {
+                Id = 3,
                 Name = "Desmond",
                 Surname = "Morris",
                 BirthDate = new DateTime(1955, 4, 12),

@@ -15,54 +15,54 @@ namespace TradeMarket.Tests.DataTests
     {
         [TestCase(1)]
         [TestCase(2)]
-        public async Task PersonRepository_GetById_ReturnsSingleValue(int id)
+        public async Task PersonRepository_GetByIdAsync_ReturnsSingleValue(int id)
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var personRepository = new PersonRepository(context);
-            var person = await personRepository.GetById(id);
+            var person = await personRepository.GetByIdAsync(id);
 
             var expected = ExpectedPersons.FirstOrDefault(x => x.Id == id);
 
-            Assert.That(person, Is.EqualTo(expected).Using(new PersonEqualityComparer()), message: "GetById method works incorrect");
+            Assert.That(person, Is.EqualTo(expected).Using(new PersonEqualityComparer()), message: "GetByIdAsync method works incorrect");
         }
 
         [Test]
-        public async Task PersonRepository_GetAll_ReturnsAllValues()
+        public async Task PersonRepository_GetAllAsync_ReturnsAllValues()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var personRepository = new PersonRepository(context);
-            var persons = await personRepository.GetAll();
+            var persons = await personRepository.GetAllAsync();
 
-            Assert.That(persons, Is.EqualTo(ExpectedPersons).Using(new PersonEqualityComparer()), message: "GetAll method works incorrect");
+            Assert.That(persons, Is.EqualTo(ExpectedPersons).Using(new PersonEqualityComparer()), message: "GetAllAsync method works incorrect");
         }
 
         [Test]
-        public async Task PersonRepository_Add_AddsValueToDatabase()
+        public async Task PersonRepository_AddAsync_AddsValueToDatabase()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var personRepository = new PersonRepository(context);
             var person = new Person { Id = 3 };
 
-            await personRepository.Add(person);
+            await personRepository.AddAsync(person);
             await context.SaveChangesAsync();
 
-            Assert.That(context.Persons.Count(), Is.EqualTo(3), message: "Add method works incorrect");
+            Assert.That(context.Persons.Count(), Is.EqualTo(3), message: "AddAsync method works incorrect");
         }
 
         [Test]
-        public async Task PersonRepository_DeleteById_DeletesEntity()
+        public async Task PersonRepository_DeleteByIdAsync_DeletesEntity()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var personRepository = new PersonRepository(context);
 
-            await personRepository.DeleteById(1);
+            await personRepository.DeleteByIdAsync(1);
             await context.SaveChangesAsync();
 
-            Assert.That(context.Persons.Count(), Is.EqualTo(1), message: "DeleteById works incorrect");
+            Assert.That(context.Persons.Count(), Is.EqualTo(1), message: "DeleteByIdAsync works incorrect");
         }
 
         [Test]

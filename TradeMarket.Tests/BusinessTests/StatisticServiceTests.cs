@@ -21,7 +21,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.GetAllWithDetails()).ReturnsAsync(ReceiptDetailEntities.AsEnumerable());
+            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.GetAllWithDetailsAsync()).ReturnsAsync(ReceiptDetailEntities.AsEnumerable());
             var statisticService = new StatisticService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
@@ -39,7 +39,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetails()).ReturnsAsync(ReceiptEntities.AsEnumerable());
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetailsAsync()).ReturnsAsync(ReceiptEntities.AsEnumerable());
             var statisticService = new StatisticService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
@@ -55,7 +55,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetails()).ReturnsAsync(ReceiptEntities.AsEnumerable());
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetailsAsync()).ReturnsAsync(ReceiptEntities.AsEnumerable());
             var statisticService = new StatisticService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
@@ -74,7 +74,7 @@ namespace TradeMarket.Tests.BusinessTests
         public async Task StatisticService_GetIncomeOfCategoryInPeriod_ReturnsSumOfCategoryProductsSalesInPeriod(int categoryId, decimal sum)
         {
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetails()).ReturnsAsync(ReceiptEntities.AsEnumerable());
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetailsAsync()).ReturnsAsync(ReceiptEntities.AsEnumerable());
             var statisticService = new StatisticService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act

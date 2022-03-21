@@ -25,7 +25,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.ReceiptRepository.GetAllWithDetails())
+                .Setup(x => x.ReceiptRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(GetTestReceiptsEntities.AsEnumerable());
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -46,7 +46,7 @@ namespace TradeMarket.Tests.BusinessTests
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork
-                .Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>()))
+                .Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>()))
                 .ReturnsAsync(GetTestReceiptsEntities.FirstOrDefault(x => x.Id == id));
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -64,7 +64,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ReceiptRepository.Add(It.IsAny<Receipt>()));
+            mockUnitOfWork.Setup(m => m.ReceiptRepository.AddAsync(It.IsAny<Receipt>()));
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var receipt = GetTestReceiptsModels.First();
@@ -73,7 +73,7 @@ namespace TradeMarket.Tests.BusinessTests
             await receiptService.AddAsync(receipt);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ReceiptRepository.Add(It.Is<Receipt>(c => c.Id == receipt.Id)), Times.Once);
+            mockUnitOfWork.Verify(x => x.ReceiptRepository.AddAsync(It.Is<Receipt>(c => c.Id == receipt.Id)), Times.Once);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
 
@@ -97,15 +97,15 @@ namespace TradeMarket.Tests.BusinessTests
 
         [TestCase(1)]
         [TestCase(2)]
-        public async Task ReceiptService_DeleteByIdAsync_DeletesReceiptWithDetails(int id)
+        public async Task ReceiptService_DeleteAsync_DeletesReceiptWithDetails(int id)
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             var receipt = GetTestReceiptsEntities.FirstOrDefault(x => x.Id == id);
             int expectedDetailsLength = receipt.ReceiptDetails.Count();
 
-            mockUnitOfWork.Setup(m => m.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
-            mockUnitOfWork.Setup(m => m.ReceiptRepository.DeleteById(It.IsAny<int>()));
+            mockUnitOfWork.Setup(m => m.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(m => m.ReceiptRepository.DeleteByIdAsync(It.IsAny<int>()));
             mockUnitOfWork.Setup(m => m.ReceiptDetailRepository.Delete(It.IsAny<ReceiptDetail>()));
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -114,7 +114,7 @@ namespace TradeMarket.Tests.BusinessTests
             await receiptService.DeleteAsync(id);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ReceiptRepository.DeleteById(It.Is<int>(x => x == id)), Times.Once());
+            mockUnitOfWork.Verify(x => x.ReceiptRepository.DeleteByIdAsync(It.Is<int>(x => x == id)), Times.Once());
             mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.Delete(It.Is<ReceiptDetail>(detail => detail.ReceiptId == id)),
                 failMessage: "All existing receipt details must be deleted", times: Times.Exactly(expectedDetailsLength));
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once());
@@ -127,7 +127,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>()))
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>()))
                 .ReturnsAsync(GetTestReceiptsEntities.FirstOrDefault(x => x.Id == receiptId));
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
@@ -147,7 +147,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetails()).ReturnsAsync(GetTestReceiptsEntities.AsEnumerable());
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetAllWithDetailsAsync()).ReturnsAsync(GetTestReceiptsEntities.AsEnumerable());
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
@@ -160,7 +160,7 @@ namespace TradeMarket.Tests.BusinessTests
         }
 
         [Test]
-        public async Task ReceiptService_SumAsync_ReturnsSumByReceiptIdWithDiscount()
+        public async Task ReceiptService_ToPayAsync_ReturnsSumByReceiptIdWithDiscount()
         {
             //arrange
             var receipt = new Receipt
@@ -174,11 +174,11 @@ namespace TradeMarket.Tests.BusinessTests
             };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
-            var actual = await receiptService.SumAsync(receipt.Id);
+            var actual = await receiptService.ToPayAsync(receipt.Id);
 
             //assert
             Assert.AreEqual(99, actual);
@@ -203,17 +203,17 @@ namespace TradeMarket.Tests.BusinessTests
             };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
-            mockUnitOfWork.Setup(x => x.ProductRepository.GetById(It.IsAny<int>()))
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ProductRepository.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(ProductEntities.FirstOrDefault(x => x.Id == productId));
-            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.Add(It.IsAny<ReceiptDetail>()));
+            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.AddAsync(It.IsAny<ReceiptDetail>()));
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
             await receiptService.AddProductAsync(productId, 1, 5);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.Add(It.Is<ReceiptDetail>(receiptDetail =>
+            mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.AddAsync(It.Is<ReceiptDetail>(receiptDetail =>
                 receiptDetail.ReceiptId == receipt.Id && receiptDetail.ProductId == productId && receiptDetail.Quantity == 5)), Times.Once);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -233,8 +233,8 @@ namespace TradeMarket.Tests.BusinessTests
             };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
-            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.Add(It.IsAny<ReceiptDetail>()));
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.AddAsync(It.IsAny<ReceiptDetail>()));
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
@@ -243,7 +243,7 @@ namespace TradeMarket.Tests.BusinessTests
             //assert
             var actualQuantity = receipt.ReceiptDetails.First().Quantity;
             actualQuantity.Should().Be(7);
-            mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.Add(It.IsAny<ReceiptDetail>()), Times.Never);
+            mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.AddAsync(It.IsAny<ReceiptDetail>()), Times.Never);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
 
@@ -256,9 +256,9 @@ namespace TradeMarket.Tests.BusinessTests
             var receipt = new Receipt { Id = 1, CustomerId = 1, Customer = new Customer { Id = 1, DiscountValue = discount } };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
-            mockUnitOfWork.Setup(x => x.ProductRepository.GetById(It.IsAny<int>())).ReturnsAsync(product);
-            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.Add(It.IsAny<ReceiptDetail>()));
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ProductRepository.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(product);
+            mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.AddAsync(It.IsAny<ReceiptDetail>()));
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
@@ -266,7 +266,7 @@ namespace TradeMarket.Tests.BusinessTests
             await receiptService.AddProductAsync(1, 1, 2);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.Add(It.Is<ReceiptDetail>(detail =>
+            mockUnitOfWork.Verify(x => x.ReceiptDetailRepository.AddAsync(It.Is<ReceiptDetail>(detail =>
                 detail.ReceiptId == receipt.Id && detail.UnitPrice == product.Price && detail.ProductId == product.Id &&
                 detail.DiscountUnitPrice == expectedDiscountPrice)), Times.Once);
 
@@ -282,8 +282,8 @@ namespace TradeMarket.Tests.BusinessTests
             var receipt = new Receipt { Id = 1, CustomerId = 1 };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
-            mockUnitOfWork.Setup(x => x.ProductRepository.GetById(It.IsAny<int>()));
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ProductRepository.GetByIdAsync(It.IsAny<int>()));
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
@@ -300,8 +300,8 @@ namespace TradeMarket.Tests.BusinessTests
             //arrange
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>()));
-            mockUnitOfWork.Setup(x => x.ProductRepository.GetById(It.IsAny<int>()));
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>()));
+            mockUnitOfWork.Setup(x => x.ProductRepository.GetByIdAsync(It.IsAny<int>()));
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
@@ -319,7 +319,7 @@ namespace TradeMarket.Tests.BusinessTests
             var receipt = new Receipt { Id = 1, IsCheckedOut = false };
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(x => x.ReceiptRepository
-                .GetById(It.IsAny<int>()))
+                .GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(receipt);
 
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -349,7 +349,7 @@ namespace TradeMarket.Tests.BusinessTests
             };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
@@ -378,7 +378,7 @@ namespace TradeMarket.Tests.BusinessTests
             };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetails(It.IsAny<int>())).ReturnsAsync(receipt);
+            mockUnitOfWork.Setup(x => x.ReceiptRepository.GetByIdWithDetailsAsync(It.IsAny<int>())).ReturnsAsync(receipt);
             mockUnitOfWork.Setup(x => x.ReceiptDetailRepository.Delete(It.IsAny<ReceiptDetail>()));
             var receiptService = new ReceiptService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 

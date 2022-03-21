@@ -14,54 +14,54 @@ namespace TradeMarket.Tests.DataTests
     {
         [TestCase(1)]
         [TestCase(2)]
-        public async Task ProductCategoryRepository_GetById_ReturnsSingleValue(int id)
+        public async Task ProductCategoryRepository_GetByIdAsync_ReturnsSingleValue(int id)
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productCategoryRepository = new ProductCategoryRepository(context);
-            var productCategory = await productCategoryRepository.GetById(id);
+            var productCategory = await productCategoryRepository.GetByIdAsync(id);
 
             var expected = ExpectedProductCategories.FirstOrDefault(x => x.Id == id);
 
-            Assert.That(productCategory, Is.EqualTo(expected).Using(new ProductCategoryEqualityComparer()), message: "GetById method works incorrect");
+            Assert.That(productCategory, Is.EqualTo(expected).Using(new ProductCategoryEqualityComparer()), message: "GetByIdAsync method works incorrect");
         }
 
         [Test]
-        public async Task ProductCategoryRepository_GetAll_ReturnsAllValues()
+        public async Task ProductCategoryRepository_GetAllAsync_ReturnsAllValues()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productCategoryRepository = new ProductCategoryRepository(context);
-            var productCategories = await productCategoryRepository.GetAll();
+            var productCategories = await productCategoryRepository.GetAllAsync();
 
-            Assert.That(productCategories, Is.EqualTo(ExpectedProductCategories).Using(new ProductCategoryEqualityComparer()), message: "GetAll method works incorrect");
+            Assert.That(productCategories, Is.EqualTo(ExpectedProductCategories).Using(new ProductCategoryEqualityComparer()), message: "GetAllAsync method works incorrect");
         }
 
         [Test]
-        public async Task ProductCategoryRepository_Add_AddsValueToDatabase()
+        public async Task ProductCategoryRepository_AddAsync_AddsValueToDatabase()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productCategoryRepository = new ProductCategoryRepository(context);
             var productCategory = new ProductCategory { Id = 3 };
 
-            await productCategoryRepository.Add(productCategory);
+            await productCategoryRepository.AddAsync(productCategory);
             await context.SaveChangesAsync();
 
-            Assert.That(context.ProductCategories.Count(), Is.EqualTo(3), message: "Add method works incorrect");
+            Assert.That(context.ProductCategories.Count(), Is.EqualTo(3), message: "AddAsync method works incorrect");
         }
 
         [Test]
-        public async Task ProductCategoryRepository_DeleteById_DeletesEntity()
+        public async Task ProductCategoryRepository_DeleteByIdAsync_DeletesEntity()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productCategoryRepository = new ProductCategoryRepository(context);
 
-            await productCategoryRepository.DeleteById(1);
+            await productCategoryRepository.DeleteByIdAsync(1);
             await context.SaveChangesAsync();
 
-            Assert.That(context.ProductCategories.Count(), Is.EqualTo(1), message: "DeleteById works incorrect");
+            Assert.That(context.ProductCategories.Count(), Is.EqualTo(1), message: "DeleteByIdAsync works incorrect");
         }
 
         [Test]

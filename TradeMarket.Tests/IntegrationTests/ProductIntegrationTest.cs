@@ -95,7 +95,7 @@ namespace TradeMarket.Tests.IntegrationTests
         public async Task ProductsController_Add_AddsProductToDb()
         {
             //arrange
-            var product = new ProductModel { ProductName = "Milk", Price = 25, ProductCategoryId = 1 };
+            var product = new ProductModel { Id = 3, ProductName = "Milk", Price = 25, ProductCategoryId = 1 };
 
             //act
             var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
@@ -168,7 +168,7 @@ namespace TradeMarket.Tests.IntegrationTests
         public async Task ProductsController_AddCategory_AddsCategoryModelToDb()
         {
             //arrange
-            var category = new ProductCategoryModel { CategoryName = "Condiments" };
+            var category = new ProductCategoryModel { Id = 3, CategoryName = "Condiments" };
             var expectedLength = CategoryModels.Count() + 1;
 
             //act

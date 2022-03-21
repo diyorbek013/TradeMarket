@@ -25,7 +25,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.CustomerRepository.GetAllWithDetails())
+                .Setup(x => x.CustomerRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(GetTestCustomerEntities.AsEnumerable());
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -45,7 +45,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(m => m.CustomerRepository.GetByIdWithDetails(It.IsAny<int>()))
+                .Setup(m => m.CustomerRepository.GetByIdWithDetailsAsync(It.IsAny<int>()))
                 .ReturnsAsync(GetTestCustomerEntities.First());
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -62,7 +62,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.CustomerRepository.Add(It.IsAny<Customer>()));
+            mockUnitOfWork.Setup(m => m.CustomerRepository.AddAsync(It.IsAny<Customer>()));
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var customer = GetTestCustomerModels.First();
@@ -71,7 +71,7 @@ namespace TradeMarket.Tests.BusinessTests
             await customerService.AddAsync(customer);
 
             //assert
-            mockUnitOfWork.Verify(x => x.CustomerRepository.Add(It.Is<Customer>(x =>
+            mockUnitOfWork.Verify(x => x.CustomerRepository.AddAsync(It.Is<Customer>(x =>
                             x.Id == customer.Id && x.DiscountValue == customer.DiscountValue &&
                             x.Person.Surname == customer.Surname && x.Person.Name == customer.Name &&
                             x.Person.BirthDate == customer.BirthDate)), Times.Once);
@@ -83,7 +83,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.CustomerRepository.Add(It.IsAny<Customer>()));
+            mockUnitOfWork.Setup(m => m.CustomerRepository.AddAsync(It.IsAny<Customer>()));
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var customer = GetTestCustomerModels.First();
@@ -102,7 +102,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.CustomerRepository.Add(It.IsAny<Customer>()));
+            mockUnitOfWork.Setup(m => m.CustomerRepository.AddAsync(It.IsAny<Customer>()));
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
@@ -116,18 +116,18 @@ namespace TradeMarket.Tests.BusinessTests
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(100)]
-        public async Task CustomerService_DeleteByIdAsync_DeletesCustomer(int id)
+        public async Task CustomerService_DeleteAsync_DeletesCustomer(int id)
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.CustomerRepository.DeleteById(It.IsAny<int>()));
+            mockUnitOfWork.Setup(m => m.CustomerRepository.DeleteByIdAsync(It.IsAny<int>()));
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
             await customerService.DeleteAsync(id);
 
             //assert
-            mockUnitOfWork.Verify(x => x.CustomerRepository.DeleteById(id), Times.Once());
+            mockUnitOfWork.Verify(x => x.CustomerRepository.DeleteByIdAsync(id), Times.Once());
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once());
         }
 
@@ -137,7 +137,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.CustomerRepository.Add(It.IsAny<Customer>()));
+            mockUnitOfWork.Setup(m => m.CustomerRepository.AddAsync(It.IsAny<Customer>()));
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var customer = GetTestCustomerModels.First();
@@ -219,7 +219,7 @@ namespace TradeMarket.Tests.BusinessTests
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork
-                .Setup(m => m.CustomerRepository.GetAllWithDetails())
+                .Setup(m => m.CustomerRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(GetTestCustomerEntities.AsQueryable());
 
             var customerService = new CustomerService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());

@@ -14,56 +14,56 @@ namespace TradeMarket.Tests.DataTests
     {
         [TestCase(1)]
         [TestCase(2)]
-        public async Task ProductRepository_GetById_ReturnsSingleValue(int id)
+        public async Task ProductRepository_GetByIdAsync_ReturnsSingleValue(int id)
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productRepository = new ProductRepository(context);
 
-            var product = await productRepository.GetById(id);
+            var product = await productRepository.GetByIdAsync(id);
 
             var expected = ExpectedProducts.FirstOrDefault(x => x.Id == id);
 
-            Assert.That(product, Is.EqualTo(expected).Using(new ProductEqualityComparer()), message: "GetById method works incorrect");
+            Assert.That(product, Is.EqualTo(expected).Using(new ProductEqualityComparer()), message: "GetByIdAsync method works incorrect");
         }
 
         [Test]
-        public async Task ProductRepository_GetAll_ReturnsAllValues()
+        public async Task ProductRepository_GetAllAsync_ReturnsAllValues()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productRepository = new ProductRepository(context);
 
-            var products = await productRepository.GetAll();
+            var products = await productRepository.GetAllAsync();
 
-            Assert.That(products, Is.EqualTo(ExpectedProducts).Using(new ProductEqualityComparer()), message: "GetAll method works incorrect");
+            Assert.That(products, Is.EqualTo(ExpectedProducts).Using(new ProductEqualityComparer()), message: "GetAllAsync method works incorrect");
         }
 
         [Test]
-        public async Task ProductRepository_Add_AddsValueToDatabase()
+        public async Task ProductRepository_AddAsync_AddsValueToDatabase()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productRepository = new ProductRepository(context);
             var product = new Product { Id = 3 };
 
-            await productRepository.Add(product);
+            await productRepository.AddAsync(product);
             await context.SaveChangesAsync();
 
-            Assert.That(context.Products.Count(), Is.EqualTo(3), message: "Add method works incorrect");
+            Assert.That(context.Products.Count(), Is.EqualTo(3), message: "AddAsync method works incorrect");
         }
 
         [Test]
-        public async Task ProductRepository_DeleteById_DeletesEntity()
+        public async Task ProductRepository_DeleteByIdAsync_DeletesEntity()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productRepository = new ProductRepository(context);
 
-            await productRepository.DeleteById(1);
+            await productRepository.DeleteByIdAsync(1);
             await context.SaveChangesAsync();
 
-            Assert.That(context.Products.Count(), Is.EqualTo(1), message: "DeleteById works incorrect");
+            Assert.That(context.Products.Count(), Is.EqualTo(1), message: "DeleteByIdAsync works incorrect");
         }
 
         [Test]
@@ -93,37 +93,37 @@ namespace TradeMarket.Tests.DataTests
         }
 
         [Test]
-        public async Task ProductRepository_GetByIdWithDetails_ReturnsWithIncludedEntities()
+        public async Task ProductRepository_GetByIdWithDetailsAsync_ReturnsWithIncludedEntities()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productRepository = new ProductRepository(context);
 
-            var product = await productRepository.GetByIdWithDetails(1);
+            var product = await productRepository.GetByIdWithDetailsAsync(1);
 
             var expected = ExpectedProducts.FirstOrDefault(x => x.Id == 1);
             var expectedReceiptDetailsCount = 2;
 
-            Assert.That(product, Is.EqualTo(expected).Using(new ProductEqualityComparer()), message: "GetByIdWithDetails method works incorrect");
-            Assert.That(product.ReceiptDetails.Count, Is.EqualTo(expectedReceiptDetailsCount), message: "GetByIdWithDetails method doesnt't return included entities");
-            Assert.That(product.Category, Is.Not.Null, message: "GetByIdWithDetails method doesnt't return included entities");
+            Assert.That(product, Is.EqualTo(expected).Using(new ProductEqualityComparer()), message: "GetByIdWithDetailsAsync method works incorrect");
+            Assert.That(product.ReceiptDetails.Count, Is.EqualTo(expectedReceiptDetailsCount), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
+            Assert.That(product.Category, Is.Not.Null, message: "GetByIdWithDetailsAsync method doesnt't return included entities");
         }
 
         [Test]
-        public async Task ProductRepository_GetAllWithDetails_ReturnsWithIncludedEntities()
+        public async Task ProductRepository_GetAllWithDetailsAsync_ReturnsWithIncludedEntities()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var productRepository = new ProductRepository(context);
 
-            var products = await productRepository.GetAllWithDetails();
+            var products = await productRepository.GetAllWithDetailsAsync();
             var product = products.FirstOrDefault(x => x.Id == 1);
 
             var expectedReceiptDetailsCount = 2;
 
-            Assert.That(products, Is.EqualTo(ExpectedProducts).Using(new ProductEqualityComparer()), message: "GetAllWithDetails method works incorrect");
-            Assert.That(product.ReceiptDetails.Count, Is.EqualTo(expectedReceiptDetailsCount), message: "GetAllWithDetails method doesnt't return included entities");
-            Assert.That(product.Category, Is.Not.Null, message: "GetByIdWithDetails method doesnt't return included entities");
+            Assert.That(products, Is.EqualTo(ExpectedProducts).Using(new ProductEqualityComparer()), message: "GetAllWithDetailsAsync method works incorrect");
+            Assert.That(product.ReceiptDetails.Count, Is.EqualTo(expectedReceiptDetailsCount), message: "GetAllWithDetailsAsync method doesnt't return included entities");
+            Assert.That(product.Category, Is.Not.Null, message: "GetByIdWithDetailsAsync method doesnt't return included entities");
         }
 
         private static IEnumerable<Product> ExpectedProducts =>

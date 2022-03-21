@@ -25,7 +25,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.ProductRepository.GetAllWithDetails())
+                .Setup(x => x.ProductRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(ProductEntities.AsEnumerable());
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -39,20 +39,20 @@ namespace TradeMarket.Tests.BusinessTests
         }
 
         [Test]
-        public async Task ProductService_GetAllProductCategories_ReturnsAllCategories()
+        public async Task ProductService_GetAllProductCategoriesAsync_ReturnsAllCategories()
         {
             //arrange
             var expected = ProductCategoryModels;
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.ProductCategoryRepository.GetAll())
+                .Setup(x => x.ProductCategoryRepository.GetAllAsync())
                 .ReturnsAsync(ProductCategoryEntities.AsEnumerable());
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
-            var actual = await productService.GetAllProductCategories();
+            var actual = await productService.GetAllProductCategoriesAsync();
 
             //assert
             actual.Should().BeEquivalentTo(expected, options =>
@@ -68,7 +68,7 @@ namespace TradeMarket.Tests.BusinessTests
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork
-                .Setup(x => x.ProductRepository.GetByIdWithDetails(It.IsAny<int>()))
+                .Setup(x => x.ProductRepository.GetByIdWithDetailsAsync(It.IsAny<int>()))
                 .ReturnsAsync(ProductEntities.FirstOrDefault(x => x.Id == id));
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -87,7 +87,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductRepository.Add(It.IsAny<Product>()));
+            mockUnitOfWork.Setup(m => m.ProductRepository.AddAsync(It.IsAny<Product>()));
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var product = new ProductModel { Id = 1, ProductName = "Chai", ProductCategoryId = 1, Price = 18.00m };
@@ -96,7 +96,7 @@ namespace TradeMarket.Tests.BusinessTests
             await productService.AddAsync(product);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ProductRepository.Add(It.Is<Product>(c => c.Id == product.Id && c.ProductCategoryId == product.ProductCategoryId && c.Price == product.Price && c.ProductName == product.ProductName)), Times.Once);
+            mockUnitOfWork.Verify(x => x.ProductRepository.AddAsync(It.Is<Product>(c => c.Id == product.Id && c.ProductCategoryId == product.ProductCategoryId && c.Price == product.Price && c.ProductName == product.ProductName)), Times.Once);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
 
@@ -105,7 +105,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductCategoryRepository.Add(It.IsAny<ProductCategory>()));
+            mockUnitOfWork.Setup(m => m.ProductCategoryRepository.AddAsync(It.IsAny<ProductCategory>()));
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var category = new ProductCategoryModel { Id = 1, CategoryName = "Bevearages" };
@@ -115,7 +115,7 @@ namespace TradeMarket.Tests.BusinessTests
 
             //add equality comparer
             //assert
-            mockUnitOfWork.Verify(x => x.ProductCategoryRepository.Add(It.Is<ProductCategory>(c => c.Id == category.Id && c.CategoryName == category.CategoryName)), Times.Once);
+            mockUnitOfWork.Verify(x => x.ProductCategoryRepository.AddAsync(It.Is<ProductCategory>(c => c.Id == category.Id && c.CategoryName == category.CategoryName)), Times.Once);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
 
@@ -124,7 +124,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductRepository.Add(It.IsAny<Product>()));
+            mockUnitOfWork.Setup(m => m.ProductRepository.AddAsync(It.IsAny<Product>()));
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var product = new ProductModel { Id = 1, ProductName = string.Empty, ProductCategoryId = 1, CategoryName = "Beverages", Price = 18.00m };
@@ -143,7 +143,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductRepository.Add(It.IsAny<Product>()));
+            mockUnitOfWork.Setup(m => m.ProductRepository.AddAsync(It.IsAny<Product>()));
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var product = new ProductModel { Id = 1, ProductName = "Cola", ProductCategoryId = 1, CategoryName = "Beverages", Price = price };
@@ -161,7 +161,7 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductCategoryRepository.Add(It.IsAny<ProductCategory>()));
+            mockUnitOfWork.Setup(m => m.ProductCategoryRepository.AddAsync(It.IsAny<ProductCategory>()));
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
             var category = new ProductCategoryModel { Id = 1, CategoryName = "" };
@@ -175,18 +175,18 @@ namespace TradeMarket.Tests.BusinessTests
 
         [TestCase(1)]
         [TestCase(2)]
-        public async Task ProductService_DeleteByIdAsync_DeletesProduct(int id)
+        public async Task ProductService_DeleteAsync_DeletesProduct(int id)
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductRepository.DeleteById(It.IsAny<int>()));
+            mockUnitOfWork.Setup(m => m.ProductRepository.DeleteByIdAsync(It.IsAny<int>()));
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
             await productService.DeleteAsync(id);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ProductRepository.DeleteById(id), Times.Once);
+            mockUnitOfWork.Verify(x => x.ProductRepository.DeleteByIdAsync(id), Times.Once);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
 
@@ -196,14 +196,14 @@ namespace TradeMarket.Tests.BusinessTests
         {
             //arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(m => m.ProductCategoryRepository.DeleteById(It.IsAny<int>()));
+            mockUnitOfWork.Setup(m => m.ProductCategoryRepository.DeleteByIdAsync(It.IsAny<int>()));
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
 
             //act
             await productService.RemoveCategoryAsync(id);
 
             //assert
-            mockUnitOfWork.Verify(x => x.ProductCategoryRepository.DeleteById(id), Times.Once);
+            mockUnitOfWork.Verify(x => x.ProductCategoryRepository.DeleteByIdAsync(id), Times.Once);
             mockUnitOfWork.Verify(x => x.SaveAsync(), Times.Once);
         }
 
@@ -289,7 +289,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.ProductRepository.GetAllWithDetails())
+                .Setup(x => x.ProductRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(ProductEntities.AsEnumerable());
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -314,7 +314,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.ProductRepository.GetAllWithDetails())
+                .Setup(x => x.ProductRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(ProductEntities.AsEnumerable());
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());
@@ -340,7 +340,7 @@ namespace TradeMarket.Tests.BusinessTests
             var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork
-                .Setup(x => x.ProductRepository.GetAllWithDetails())
+                .Setup(x => x.ProductRepository.GetAllWithDetailsAsync())
                 .ReturnsAsync(ProductEntities.AsEnumerable());
 
             var productService = new ProductService(mockUnitOfWork.Object, UnitTestHelper.CreateMapperProfile());

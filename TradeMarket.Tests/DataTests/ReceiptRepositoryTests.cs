@@ -15,54 +15,54 @@ namespace TradeMarket.Tests.DataTests
     {
         [TestCase(1)]
         [TestCase(3)]
-        public async Task ReceiptRepository_GetById_ReturnsSingleValue(int id)
+        public async Task ReceiptRepository_GetByIdAsync_ReturnsSingleValue(int id)
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var receiptRepository = new ReceiptRepository(context);
-            var receipt = await receiptRepository.GetById(id);
+            var receipt = await receiptRepository.GetByIdAsync(id);
 
             var expected = ExpectedReceipts.FirstOrDefault(x => x.Id == id);
 
-            Assert.That(receipt, Is.EqualTo(expected).Using(new ReceiptEqualityComparer()), message: "GetById method works incorrect");
+            Assert.That(receipt, Is.EqualTo(expected).Using(new ReceiptEqualityComparer()), message: "GetByIdAsync method works incorrect");
         }
 
         [Test]
-        public async Task ReceiptRepository_GetAll_ReturnsAllValues()
+        public async Task ReceiptRepository_GetAllAsync_ReturnsAllValues()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var receiptRepository = new ReceiptRepository(context);
-            var receipts = await receiptRepository.GetAll();
+            var receipts = await receiptRepository.GetAllAsync();
 
-            Assert.That(receipts, Is.EqualTo(ExpectedReceipts).Using(new ReceiptEqualityComparer()), message: "GetAll method works incorrect");
+            Assert.That(receipts, Is.EqualTo(ExpectedReceipts).Using(new ReceiptEqualityComparer()), message: "GetAllAsync method works incorrect");
         }
 
         [Test]
-        public async Task ReceiptRepository_Add_AddsValueToDatabase()
+        public async Task ReceiptRepository_AddAsync_AddsValueToDatabase()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var receiptRepository = new ReceiptRepository(context);
             var receipt = new Receipt { Id = 4 };
 
-            await receiptRepository.Add(receipt);
+            await receiptRepository.AddAsync(receipt);
             await context.SaveChangesAsync();
 
-            Assert.That(context.Receipts.Count(), Is.EqualTo(4), message: "Add method works incorrect");
+            Assert.That(context.Receipts.Count(), Is.EqualTo(4), message: "AddAsync method works incorrect");
         }
 
         [Test]
-        public async Task ReceiptRepository_DeleteById_DeletesEntity()
+        public async Task ReceiptRepository_DeleteByIdAsync_DeletesEntity()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var receiptRepository = new ReceiptRepository(context);
 
-            await receiptRepository.DeleteById(1);
+            await receiptRepository.DeleteByIdAsync(1);
             await context.SaveChangesAsync();
 
-            Assert.That(context.Receipts.Count(), Is.EqualTo(2), message: "DeleteById works incorrect");
+            Assert.That(context.Receipts.Count(), Is.EqualTo(2), message: "DeleteByIdAsync works incorrect");
         }
 
         [Test]
@@ -92,55 +92,55 @@ namespace TradeMarket.Tests.DataTests
         }
 
         [Test]
-        public async Task ReceiptRepository_GetByIdWithDetails_ReturnsWithIncludedEntities()
+        public async Task ReceiptRepository_GetByIdWithDetailsAsync_ReturnsWithIncludedEntities()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var receiptRepository = new ReceiptRepository(context);
 
-            var receipt = await receiptRepository.GetByIdWithDetails(1);
+            var receipt = await receiptRepository.GetByIdWithDetailsAsync(1);
 
             var expected = ExpectedReceipts.FirstOrDefault(x => x.Id == 1);
 
             Assert.That(receipt, 
-                Is.EqualTo(expected).Using(new ReceiptEqualityComparer()), message: "GetByIdWithDetails method works incorrect");
+                Is.EqualTo(expected).Using(new ReceiptEqualityComparer()), message: "GetByIdWithDetailsAsync method works incorrect");
             
             Assert.That(receipt.ReceiptDetails, 
-                Is.EqualTo(ExpectedReceiptsDetails.Where(i => i.ReceiptId == expected.Id).OrderBy(i => i.Id)).Using(new ReceiptDetailEqualityComparer()), message: "GetByIdWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedReceiptsDetails.Where(i => i.ReceiptId == expected.Id).OrderBy(i => i.Id)).Using(new ReceiptDetailEqualityComparer()), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
             
             Assert.That(receipt.ReceiptDetails.Select(i => i.Product).OrderBy(i => i.Id), 
-                Is.EqualTo(ExpectedProducts.Where(i => i.Id == 1 || i.Id == 2)).Using(new ProductEqualityComparer()), message: "GetByIdWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedProducts.Where(i => i.Id == 1 || i.Id == 2)).Using(new ProductEqualityComparer()), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
 
             Assert.That(receipt.ReceiptDetails.Select(i => i.Product.Category).OrderBy(i => i.Id),
-                Is.EqualTo(ExpectedProductCategories.Where(i => i.Id == 1 || i.Id == 2)).Using(new ProductCategoryEqualityComparer()), message: "GetByIdWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedProductCategories.Where(i => i.Id == 1 || i.Id == 2)).Using(new ProductCategoryEqualityComparer()), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
 
             Assert.That(receipt.Customer, 
-                Is.EqualTo(ExpectedCustomers.FirstOrDefault(i => i.Id == expected.CustomerId)).Using(new CustomerEqualityComparer()), message: "GetByIdWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedCustomers.FirstOrDefault(i => i.Id == expected.CustomerId)).Using(new CustomerEqualityComparer()), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
         }
 
         [Test]
-        public async Task ReceiptRepository_GetAllWithDetails_ReturnsWithIncludedEntities()
+        public async Task ReceiptRepository_GetAllWithDetailsAsync_ReturnsWithIncludedEntities()
         {
             using var context = new TradeMarketDbContext(UnitTestHelper.GetUnitTestDbOptions());
 
             var receiptRepository = new ReceiptRepository(context);
 
-            var receipts = await receiptRepository.GetAllWithDetails();
+            var receipts = await receiptRepository.GetAllWithDetailsAsync();
 
             Assert.That(receipts, 
-                Is.EqualTo(ExpectedReceipts).Using(new ReceiptEqualityComparer()), message: "GetAllWithDetails method works incorrect");
+                Is.EqualTo(ExpectedReceipts).Using(new ReceiptEqualityComparer()), message: "GetAllWithDetailsAsync method works incorrect");
             
             Assert.That(receipts.SelectMany(i => i.ReceiptDetails).OrderBy(i => i.Id), 
-                Is.EqualTo(ExpectedReceiptsDetails).Using(new ReceiptDetailEqualityComparer()), message: "GetAllWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedReceiptsDetails).Using(new ReceiptDetailEqualityComparer()), message: "GetAllWithDetailsAsync method doesnt't return included entities");
 
             Assert.That(receipts.SelectMany(i => i.ReceiptDetails).Select(i => i.Product).Distinct().OrderBy(i => i.Id),
-                Is.EqualTo(ExpectedProducts).Using(new ProductEqualityComparer()), message: "GetByIdWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedProducts).Using(new ProductEqualityComparer()), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
 
             Assert.That(receipts.SelectMany(i => i.ReceiptDetails).Select(i => i.Product.Category).Distinct().OrderBy(i => i.Id),
-                Is.EqualTo(ExpectedProductCategories).Using(new ProductCategoryEqualityComparer()), message: "GetByIdWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedProductCategories).Using(new ProductCategoryEqualityComparer()), message: "GetByIdWithDetailsAsync method doesnt't return included entities");
 
             Assert.That(receipts.Select(i => i.Customer).Distinct().OrderBy(i => i.Id),
-                Is.EqualTo(ExpectedCustomers).Using(new CustomerEqualityComparer()), message: "GetAllWithDetails method doesnt't return included entities");
+                Is.EqualTo(ExpectedCustomers).Using(new CustomerEqualityComparer()), message: "GetAllWithDetailsAsync method doesnt't return included entities");
         }
 
         private static IEnumerable<Receipt> ExpectedReceipts =>
